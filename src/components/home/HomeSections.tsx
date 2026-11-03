@@ -84,7 +84,7 @@ export function PlacesInspire({ items }: { items: { slug: string; name: string; 
           title="Places That Inspire"
           action={{ href: "/destinations", label: "View all destinations" }}
         />
-        <ul className="-mx-6 mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-2 lg:mx-0 lg:grid lg:grid-cols-5 lg:overflow-visible lg:px-0 [scrollbar-width:thin]">
+        <ul className="-mx-6 mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-2 lg:mx-0 lg:grid lg:grid-cols-5 lg:overflow-visible lg:px-0 no-scrollbar">
           {items.map((p) => (
             <li key={p.slug} className="w-[68%] shrink-0 snap-start sm:w-[40%] lg:w-auto">
               <article className="group relative aspect-[3/4] overflow-hidden rounded-card bg-charcoal-900 shadow-card">

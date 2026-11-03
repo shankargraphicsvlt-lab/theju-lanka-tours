@@ -82,6 +82,8 @@ export function IslandReel({ scenes, title }: { scenes: ReelScene[]; title: stri
     const draw = () => {
       const W = stage.clientWidth;
       const H = stage.clientHeight;
+      // Below lg there is no waiting row: the next scene simply fades in over the current one.
+      const small = !window.matchMedia("(min-width: 64rem)").matches;
       const base = Math.floor(pos + 1e-6);
       const f = Math.max(0, pos - base);
 
@@ -94,7 +96,10 @@ export function IslandReel({ scenes, title }: { scenes: ReelScene[]; title: stri
         let shade = 1;
         let z = 1;
         let card = false;
-        if (rel === 1) {
+        if (small && rel >= 1) {
+          opacity = rel === 1 ? f : 0;
+          z = rel === 1 ? 20 : 1;
+        } else if (rel === 1) {
           const c = slot(W, H, 0);
           r = { x: lerp(c.x, 0, f), y: lerp(c.y, 0, f), w: lerp(c.w, W, f), h: lerp(c.h, H, f) };
           radius = lerp(CARD_RADIUS, 0, f);
@@ -211,7 +216,7 @@ export function IslandReel({ scenes, title }: { scenes: ReelScene[]; title: stri
       {/* Full-bleed: edge to edge, filling the screen below the announcement bar and navbar. */}
       <div
         ref={stageRef}
-        className="relative isolate h-[max(720px,100svh)] overflow-hidden bg-teal-radial text-cream"
+        className="relative isolate h-[max(560px,85svh)] overflow-hidden bg-teal-radial text-cream lg:h-[max(720px,100svh)]"
         onPointerEnter={(e) => e.pointerType === "mouse" && setHovering(true)}
         onPointerLeave={(e) => e.pointerType === "mouse" && setHovering(false)}
         onTouchStart={(e) => {
@@ -301,14 +306,45 @@ export function IslandReel({ scenes, title }: { scenes: ReelScene[]; title: stri
               Watch our story
             </button>
           </div>
+          {/* Phones and tablets: progress dots, arrows, pause and counter on one line under the buttons. */}
+          <div className="pointer-events-auto mt-5 flex items-center gap-3 lg:hidden">
+            <div className="flex items-center gap-2">
+              <button type="button" aria-label="Previous destination" onClick={() => step.current(-1)} className={smallControlClasses}>
+                <ArrowLeft aria-hidden className="size-4" />
+              </button>
+              <button type="button" aria-label="Next destination" onClick={() => step.current(1)} className={smallControlClasses}>
+                <ArrowRight aria-hidden className="size-4" />
+              </button>
+              {!reduced && (
+                <button
+                  type="button"
+                  aria-label={paused ? "Play slideshow" : "Pause slideshow"}
+                  aria-pressed={paused}
+                  onClick={() => setPaused((p) => !p)}
+                  className={smallControlClasses}
+                >
+                  {paused ? <Play aria-hidden className="size-4" /> : <Pause aria-hidden className="size-4" />}
+                </button>
+              )}
+            </div>
+            <span aria-hidden className="flex min-w-0 flex-1 items-center justify-center gap-1.5">
+              {scenes.map((s, i) => (
+                <span key={s.slug} className={cn("h-1.5 rounded-full transition-all", i === shown ? "w-4 bg-gold" : "w-1.5 bg-cream/50")} />
+              ))}
+            </span>
+            <p className="font-serif text-xl leading-none font-semibold lining-nums tabular-nums drop-shadow-[0_2px_8px_rgb(0_0_0/0.55)]">
+              <span className="sr-only">Destination </span>
+              {String(shown + 1).padStart(2, "0")}
+              <span className="text-cream/70">
+                <span className="sr-only"> of</span> / {String(count).padStart(2, "0")}
+              </span>
+            </p>
+          </div>
         </div>
-
-        {/* Gold frame around the slider. */}
-        <div aria-hidden className="pointer-events-none absolute inset-0 z-50 border-[3px] border-gold" />
 
         {/* Arrows, pause and counter on one line, clear of the search card below. */}
         <div
-          className="absolute inset-x-6 z-40 flex items-center gap-2 lg:right-[max(24px,calc((100%-1280px)/2+24px))] lg:left-1/2"
+          className="absolute z-40 hidden items-center gap-2 lg:right-[max(24px,calc((100%-1280px)/2+24px))] lg:left-1/2 lg:flex"
           style={{ bottom: CONTROLS_BOTTOM, height: CONTROLS_HEIGHT }}
         >
           <button type="button" aria-label="Previous destination" onClick={() => step.current(-1)} className={controlClasses}>
@@ -343,6 +379,9 @@ export function IslandReel({ scenes, title }: { scenes: ReelScene[]; title: stri
 }
 
 const heroText = "text-ivory-50/90 [text-shadow:0_1px_12px_rgba(0,0,0,.45)]";
+
+const smallControlClasses =
+  "grid size-9 place-items-center rounded-full border border-cream/30 bg-charcoal-950/35 text-cream backdrop-blur-sm transition-colors hover:bg-charcoal-950/60";
 
 const controlClasses =
   "grid size-11 place-items-center rounded-full border border-cream/30 bg-charcoal-950/35 text-cream backdrop-blur-sm transition-colors hover:bg-charcoal-950/60";

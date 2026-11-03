@@ -51,7 +51,7 @@ export function Testimonials({ items, labelledBy }: { items: Testimonial[]; labe
       <ul
         ref={track}
         aria-labelledby={labelledBy}
-        className="-mx-6 mt-5 flex snap-x snap-mandatory scroll-px-6 gap-4 overflow-x-auto px-6 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="-mx-6 mt-5 flex snap-x snap-mandatory scroll-px-6 gap-4 overflow-x-auto px-6 pb-2 no-scrollbar"
       >
         {items.map((t) => {
           const rating = Math.max(0, Math.min(5, Math.round(t.rating)));

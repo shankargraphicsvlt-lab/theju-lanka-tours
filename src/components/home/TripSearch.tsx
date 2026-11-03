@@ -60,7 +60,8 @@ export function TripSearch({ destinationOptions, today }: { destinationOptions: 
 
   return (
     <div className="rounded-[1.75rem] border-t-4 border-gold bg-cream p-4 shadow-float sm:p-6">
-      <div role="tablist" aria-label="What are you looking for?" className="flex gap-1 overflow-x-auto">
+      {/* Tighter tabs on phones so all three, "Experiences" included, fit on one line. */}
+      <div role="tablist" aria-label="What are you looking for?" className="no-scrollbar flex gap-1 overflow-x-auto">
         {tabs.map(({ id, label: text, icon: Icon }) => (
           <button
             key={id}
@@ -71,11 +72,11 @@ export function TripSearch({ destinationOptions, today }: { destinationOptions: 
             aria-controls="trip-search-panel"
             onClick={() => setTab(id)}
             className={cn(
-              "inline-flex shrink-0 items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-colors",
+              "inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-2 text-[0.8125rem] font-semibold transition-colors sm:gap-2 sm:px-4 sm:text-sm",
               tab === id ? "bg-teal-800 text-gold" : "text-charcoal-600 hover:bg-ivory-100",
             )}
           >
-            <Icon aria-hidden className="size-4" />
+            <Icon aria-hidden className="size-3.5 sm:size-4" />
             {text}
           </button>
         ))}
@@ -102,22 +103,8 @@ export function TripSearch({ destinationOptions, today }: { destinationOptions: 
               <CalendarDays aria-hidden className="size-3.5 text-accent-ink" /> Travel dates
             </legend>
             <div className="grid grid-cols-2 gap-2">
-              <input
-                type="date"
-                aria-label="Arrival"
-                min={today}
-                value={from}
-                onChange={(e) => setFrom(e.target.value)}
-                className={field}
-              />
-              <input
-                type="date"
-                aria-label="Departure"
-                min={from || today}
-                value={to}
-                onChange={(e) => setTo(e.target.value)}
-                className={field}
-              />
+              <DateField label="Arrival" min={today} value={from} onChange={setFrom} className={field} />
+              <DateField label="Departure" min={from || today} value={to} onChange={setTo} className={field} />
             </div>
           </fieldset>
           <div>
@@ -140,6 +127,49 @@ export function TripSearch({ destinationOptions, today }: { destinationOptions: 
           </button>
         </form>
       </div>
+    </div>
+  );
+}
+
+/**
+ * Native date input dressed as a labelled field: while empty and not focused it
+ * shows its label ("Arrival") instead of a blank box or "mm/dd/yyyy", and a
+ * calendar icon replaces the browser's chevron. The browser's own picker button
+ * is stretched invisibly over the whole field, so a tap anywhere opens it.
+ */
+function DateField({
+  label,
+  min,
+  value,
+  onChange,
+  className,
+}: {
+  label: string;
+  min: string;
+  value: string;
+  onChange: (value: string) => void;
+  className: string;
+}) {
+  return (
+    <div className="relative">
+      <input
+        type="date"
+        aria-label={label}
+        min={min}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className={cn(
+          className,
+          "peer relative min-h-[2.85rem] appearance-none pr-9 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:size-full [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-0",
+          !value && "text-transparent focus:text-charcoal-900",
+        )}
+      />
+      {!value && (
+        <span aria-hidden className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm text-charcoal-500 peer-focus:hidden">
+          {label}
+        </span>
+      )}
+      <CalendarDays aria-hidden className="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-accent-ink" />
     </div>
   );
 }

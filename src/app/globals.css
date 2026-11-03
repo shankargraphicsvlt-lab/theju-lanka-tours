@@ -173,6 +173,14 @@
  * Centred, at most 1280px wide, with equal side padding (24px, or more on
  * phones with a notch).
  */
+/* Horizontal scroll rows that still swipe but show no scrollbar. */
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 @utility container-page {
   width: 100%;
   max-width: 1280px;

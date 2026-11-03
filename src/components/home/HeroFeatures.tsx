@@ -13,7 +13,7 @@ export function HeroFeatures({ className }: { className?: string }) {
   return (
     <ul
       aria-label="Why travel with us"
-      className={cn("-mx-6 flex snap-x gap-3 overflow-x-auto px-6 pb-1 sm:mx-0 sm:justify-between sm:overflow-visible sm:px-2", className)}
+      className={cn("no-scrollbar -mx-6 flex snap-x gap-3 overflow-x-auto px-6 pb-1 sm:mx-0 sm:justify-between sm:overflow-visible sm:px-2", className)}
     >
       {features.map(({ icon: Icon, label }) => (
         <li key={label} className="flex shrink-0 snap-start items-center gap-2.5 text-sm font-semibold whitespace-nowrap text-text">
